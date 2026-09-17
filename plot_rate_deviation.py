@@ -66,7 +66,7 @@ def plot_diverging_plot(
                 row.adjusted_residual,
                 row.significant,
                 row.low_reliability,
-                row.z_critical,
+                result.z_critical,
             ) for row in subset.itertuples()
         ]                                   
         bars = ax.barh(subset[outcome], subset['diff_pp'], color=colors)
@@ -104,7 +104,7 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
                 row.adjusted_residual,
                 row.significant,
                 row.low_reliability,
-                row.z_critical, 
+                result.z_critical, 
             )
             for row in tidy.itertuples()
         ]

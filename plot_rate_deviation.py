@@ -50,7 +50,7 @@ def plot_diverging_plot(
     categories = tidy[feature].unique()
     nrows = int(np.ceil(len(categories) / ncols))
     
-    fig, axes = plt.subplot(
+    fig, axes = plt.subplots(
         nrows, ncols, figsize=(14, panel_height * nrows), sharex=True,
     )
     axes = np.atleast_1d(axes).flatten()

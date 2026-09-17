@@ -39,7 +39,7 @@ def plot_diverging_plot(
     ncols=2, # panels per row
     panel_height=4.5,
     above_color='#9D9368',
-    below_color='A05135',
+    below_color='#A05135',
 ):
     """
     facet diverging bar for each feature category, bars = pp gap from outcome's baseline,

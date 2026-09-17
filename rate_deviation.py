@@ -30,6 +30,16 @@ class RateDeviationResult:
     bonferroni_alpha: float # alpha, corrected for testing n_cells at once 
     z_critical: float # |adjusted residual| beyond this is significant
     
+    def summary(self):
+        return pd.Series({
+            'Chi-squared statistic': self.chi2_statistic,
+            'p-value': self.chi2_pvalue,
+            'Degrees of Freedom': self.dof,
+            'Number of cells': self.n_cells,
+            'Bonferroni alpha': self.bonferroni_alpha,
+            'Critical z-score': self.z_critical
+            }, name='Rate deviation test')
+    
 def rate_deviation(
     data: pd.DataFrame, # cleaned dataset
     feature: str, # group i'm comparing (patient_race, patient_gender, age_category etc)

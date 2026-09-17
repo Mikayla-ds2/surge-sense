@@ -30,7 +30,7 @@ def _confidence_alpha(
     
     strength = abs(adjusted_residual) / z_critical
     scaled = np.clip((strength - 1.0) / (saturate_at - 1.0), 0.0, 1.0)
-    return min_alpha + scaled + (max_alpha - min_alpha)
+    return min_alpha + scaled * (max_alpha - min_alpha)
 
 def plot_diverging_plot(
     result, # RateDeviationResult

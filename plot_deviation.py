@@ -1,5 +1,5 @@
 """
-visualization file for rate_deviation:
+visualization file for deviation:
 color encodes direction (above/below baseline)
 opacity encodes confidence (is this finding trustworthy?)
     - cell earns full opacity when cell is significant (adjusted residual passes 
@@ -33,7 +33,7 @@ def _confidence_alpha(
     return min_alpha + scaled * (max_alpha - min_alpha)
 
 def plot_diverging_plot(
-    result, # RateDeviationResult
+    result, # DeviationResult
     feature, 
     outcome,
     ncols=2, # panels per row
@@ -143,4 +143,12 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
         "Unmuted cells = statistically significant AND reliable (expected count >= 5)"
     )
     plt.tight_layout()
-    return fig                              
+    return fig
+
+def plot_waffle_plot(
+    
+)   
+
+def plot_tree_map(
+    
+)                          

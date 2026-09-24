@@ -39,7 +39,7 @@ def plot_diverging_plot(
     ncols=2, # panels per row
     panel_height=4.5,
     above_color='#9D9368',
-    below_color='#A05135',
+    below_color='#743015',
 ):
     """
     facet diverging bar for each feature category, bars = pp gap from outcome's baseline,
@@ -112,13 +112,20 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
     alpha_wide = tidy_w_alpha.pivot(
         index=feature, columns=outcome, values="_alpha"
     ).loc[diff_wide.index, diff_wide.columns]
+    
+    from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+    palette = ['#EAD3A9','#C4B389','#B7966A',
+            '#9D9368','#A05135','#84592B',
+            '#733F28','#743015','#462D1B']
+    discrete = ListedColormap(palette)
+    continuous = LinearSegmentedColormap.from_list(palette)
  
     fig, ax = plt.subplots(figsize=figsize)
     sns.heatmap(
         diff_wide,
         annot=diff_wide.round(1),
         fmt=".1f",
-        cmap="RdYlGn",
+        cmap=continuous,
         center=0,
         linewidths=0.5,
         ax=ax,
@@ -143,12 +150,4 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
         "Unmuted cells = statistically significant AND reliable (expected count >= 5)"
     )
     plt.tight_layout()
-    return fig
-
-def plot_waffle_plot(
-    
-)   
-
-def plot_tree_map(
-    
-)                          
+    return fig                       

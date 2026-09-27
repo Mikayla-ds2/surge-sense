@@ -118,8 +118,8 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
             '#9D9368','#A05135','#84592B',
             '#733F28','#743015','#462D1B']
     discrete = ListedColormap(palette)
-    continuous = LinearSegmentedColormap.from_list(palette)
- 
+    continuous = LinearSegmentedColormap.from_list('earth_sequential', palette)
+    
     fig, ax = plt.subplots(figsize=figsize)
     sns.heatmap(
         diff_wide,

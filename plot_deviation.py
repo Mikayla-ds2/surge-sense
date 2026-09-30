@@ -23,7 +23,8 @@ def _confidence_alpha(
     significant,
     low_reliability,
     z_critical,
-    min_alpha=0.25, # opacity for anything that fails both tests; muted not hidden
+    min_alpha=0.25, # opacity for findings that fail either confidence check
+    significant_min_alpha=0.55, # clear floor for significant, reliable findings
     max_alpha=1.0, # opacity ceiling for most confident findings
     saturate_at=3.0, # keeps scale meaninfgul; prevents extreme residuals from
                     # washing out significant but not extreme findings
@@ -34,7 +35,7 @@ def _confidence_alpha(
     
     strength = abs(adjusted_residual) / z_critical
     scaled = np.clip((strength - 1.0) / (saturate_at - 1.0), 0.0, 1.0)
-    return min_alpha + scaled * (max_alpha - min_alpha)
+    return significant_min_alpha + scaled * (max_alpha - significant_min_alpha)
 
 def plot_diverging_plot(
     result, # DeviationResult
@@ -138,6 +139,8 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
     
     # adding semi-transparent white rectangle for cells that didn't clear both significance and
     # low-reliability tests
+    # Keep the heatmap's mute threshold aligned with _confidence_alpha's
+    # opacity for cells that fail either confidence check.
     min_alpha_floor = 0.25
     for i, feature_cat in enumerate(diff_wide.index):
         for j, outcome_cat in enumerate(diff_wide.columns):

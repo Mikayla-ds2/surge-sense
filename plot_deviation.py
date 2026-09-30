@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import squarify
 from pywaffle import Waffle
+import textwrap
 
 # come back to how exactly the functions get run, test, and then used in jupyter
 
@@ -219,7 +220,7 @@ def plot_composition_waffle(
             figsize=figsize,
         )
         fig.suptitle(
-            f"{outcome.replace('_', ' ').title()} makeup \u2014 {category}",
+            f"{outcome.replace('_', ' ').title()} Makeup \u2014 {category}",
             fontweight="bold",
             x=0.3,
             y=0.95,
@@ -267,21 +268,22 @@ def plot_composition_treemap(
                 result.z_critical,
             )
             colors.append(matplotlib.colors.to_rgba(base_color, alpha=alpha))
- 
+
+
         fig, ax = plt.subplots(figsize=figsize)
         squarify.plot(
             sizes=subset['pct'],
             label=subset[outcome],
             color=colors,
-            bar_kwargs={"linewidth": 1.1, "edgecolor": 'black'}
+            bar_kwargs={"linewidth": 1.1, "edgecolor": 'black'},
+            text_kwargs={'fontsize': 9},
             ax=ax,
         )
         ax.axis('off')
         ax.set_title(
-            f"{outcome.replace('_', ' ').title()} makeup \u2014 {category}",
+            f"{outcome.replace('_', ' ').title()} Makeup \u2014 {category}",
             fontweight='bold',
         )
         figs.append((category, fig))
  
     return figs
- 

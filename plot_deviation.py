@@ -15,7 +15,7 @@ import seaborn as sns
 import squarify
 from pywaffle import Waffle
 
-# come back to how exactly the functions get run, tested, and then used in jupyter
+# come back to how exactly the functions get run, test, and then used in jupyter
 
 def _confidence_alpha(
     adjusted_residual,
@@ -273,6 +273,7 @@ def plot_composition_treemap(
             sizes=subset['pct'],
             label=subset[outcome],
             color=colors,
+            bar_kwargs={"linewidth": 1.1, "edgecolor": 'black'}
             ax=ax,
         )
         ax.axis('off')

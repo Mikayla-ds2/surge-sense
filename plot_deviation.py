@@ -9,8 +9,11 @@ opacity encodes confidence (is this finding trustworthy?)
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
+import squarify
+from pywaffle import Waffle
 
 # come back to how exactly the functions get run, tested, and then used in jupyter
 
@@ -150,4 +153,134 @@ def plot_confidence_heatmap(result, feature, outcome, figsize=(13, 6)):
         "Unmuted cells = statistically significant AND reliable (expected count >= 5)"
     )
     plt.tight_layout()
-    return fig                       
+    return fig
+                       
+def plot_composition_waffle(
+    result,
+    feature,
+    outcome,
+    color_map=None,
+    icons="circle-user",
+    icon_size=16,
+    rows=10,
+    figsize=(7, 6),
+):
+    """
+    One waffle chart per feature category (e.g. one per department), each
+    summing to ~100%, squares colored by outcome category (e.g. day of
+    week). Color here encodes CATEGORY IDENTITY, not direction/confidence
+    -- this is the plain "what does the makeup actually look like" view,
+    meant to be read alongside plot_composition_treemap's significance-
+    encoded version of the same composition.
+ 
+    result.table is expected to have `feature` as rows (each summing to
+    ~100%) and `outcome` as columns -- i.e. result should come from a
+    deviation() call with THIS `feature` as the function's feature arg.
+ 
+    Returns
+    -------
+    list of (category, fig) tuples -- one entry per feature category.
+    Unlike plot_diverging_plot / plot_confidence_heatmap, this does NOT
+    return a single figure, since each category gets its own waffle.
+    """
+    plot_data = result.table  # feature as rows (index), outcome as columns
+    categories = plot_data.index.tolist()
+    outcome_categories = plot_data.columns.tolist()
+ 
+    if color_map is None:
+        palette = ['#EAD3A9', '#C4B389', '#B7966A',
+                   '#9D9368', '#A05135', '#84592B',
+                   '#733F28', '#743015', '#462D1B']
+        color_map = {
+            cat: palette[i % len(palette)]
+            for i, cat in enumerate(outcome_categories)
+        }
+ 
+    figs = []
+    for category in categories:
+        series = plot_data.loc[category].sort_values(ascending=False)
+        sorted_outcome_cats = series.index.tolist()
+ 
+        fig = plt.figure(
+            FigureClass=Waffle,
+            values=series,
+            colors=[color_map[c] for c in sorted_outcome_cats],
+            labels=[f"{c} ({pct:.1f}%)" for c, pct in series.items()],
+            icons=icons,
+            icon_size=icon_size,
+            rows=rows,
+            rounding_rule="ceil",
+            legend={
+                "loc": "lower center",
+                "bbox_to_anchor": (0.5, -0.3),
+                "ncol": 3,
+                "framealpha": 0,
+            },
+            figsize=figsize,
+        )
+        fig.suptitle(
+            f"{outcome.replace('_', ' ').title()} makeup \u2014 {category}",
+            fontweight="bold",
+            x=0.3,
+            y=0.95,
+            ha="center",
+        )
+        figs.append((category, fig))
+ 
+    return figs
+ 
+ 
+def plot_composition_treemap(
+    result,
+    feature,
+    outcome,
+    above_color='#9D9368',
+    below_color='#743015',
+    figsize=(10, 6),
+):
+    """
+    One treemap per feature category, rectangles sized by composition
+    percentage WITHIN that category, colored by direction (above/below
+    baseline) and confidence -- same _confidence_alpha logic as the
+    diverging bar and heatmap, just rendered as rectangle area instead
+    of bar length or grid position.
+ 
+    Returns
+    -------
+    list of (category, fig) tuples -- one entry per feature category,
+    same shape as plot_composition_waffle's return.
+    """
+    tidy = result.tidy
+    categories = tidy[feature].unique()
+ 
+    figs = []
+    for category in categories:
+        subset = tidy[tidy[feature] == category]
+ 
+        colors = []
+        for row in subset.itertuples():
+            base_color = above_color if row.diff_pp >= 0 else below_color
+            alpha = _confidence_alpha(
+                row.adjusted_residual,
+                row.significant,
+                row.low_reliability,
+                result.z_critical,
+            )
+            colors.append(matplotlib.colors.to_rgba(base_color, alpha=alpha))
+ 
+        fig, ax = plt.subplots(figsize=figsize)
+        squarify.plot(
+            sizes=subset['pct'],
+            label=subset[outcome],
+            color=colors,
+            ax=ax,
+        )
+        ax.axis('off')
+        ax.set_title(
+            f"{outcome.replace('_', ' ').title()} makeup \u2014 {category}",
+            fontweight='bold',
+        )
+        figs.append((category, fig))
+ 
+    return figs
+ 
